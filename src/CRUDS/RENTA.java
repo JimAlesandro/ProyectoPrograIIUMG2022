@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -23,9 +24,7 @@ import proyecto2dosemestre.Conexion;
  */
 public class RENTA extends javax.swing.JFrame {
 
-    /**
-     * Creates new form RENTA
-     */
+   ButtonGroup btngr;
     public RENTA() {
         initComponents();
        
@@ -33,7 +32,9 @@ public class RENTA extends javax.swing.JFrame {
         cargarcliente();
         cargartipopago();
         cargarusuario();
-        cargarvehiculo();
+        btngr = new ButtonGroup();
+        cargartabla();
+        cargaridvehiculo();
     }
 
     /**
@@ -65,11 +66,9 @@ public class RENTA extends javax.swing.JFrame {
         box4 = new javax.swing.JComboBox<>();
         fprestamo = new com.toedter.calendar.JDateChooser();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel8 = new javax.swing.JLabel();
-        box5 = new javax.swing.JComboBox<>();
-        jLabel10 = new javax.swing.JLabel();
-        txtprecioalquiler = new javax.swing.JTextField();
+        tblrenta = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
+        box6 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -100,8 +99,18 @@ public class RENTA extends javax.swing.JFrame {
         jButton2.setText("MODIFICAR");
 
         jButton3.setText("ELIMINAR");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("LIMPIAR");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         txtidrenta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -111,27 +120,30 @@ public class RENTA extends javax.swing.JFrame {
 
         fprestamo.setDateFormatString("dd/MM/yyyy");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblrenta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID_VEHICULO", "PRECIO_ALQUILER"
+                "ID_VEHICULO", "DESCRIPCION", "PRECIO_ALQUILER"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable1);
+        tblrenta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblrentaMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblrenta);
 
-        jLabel8.setText("ID_TIPO_VEHICULO");
-
-        jLabel10.setText("PRECIO_ALQUILER");
+        jLabel11.setText("ID_VEHICULO");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -154,10 +166,6 @@ public class RENTA extends javax.swing.JFrame {
                                 .addGap(33, 33, 33)
                                 .addComponent(box1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtidrenta, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addGap(18, 18, 18)
                                 .addComponent(box3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -170,9 +178,9 @@ public class RENTA extends javax.swing.JFrame {
                                     .addComponent(box2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(box4, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtprecioalquiler, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtidrenta, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(575, 575, 575)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -180,11 +188,6 @@ public class RENTA extends javax.swing.JFrame {
                             .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(36, 36, 36))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(box5, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -195,57 +198,55 @@ public class RENTA extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(txttotal, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(18, 18, 18)
+                        .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addGap(49, 49, 49)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtprecioalquiler, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10))
-                        .addGap(38, 38, 38))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtidrenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(box1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(box2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(box4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(box3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(33, 33, 33)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7)
-                            .addComponent(fprestamo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(3, 3, 3)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(box5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37)
+                    .addComponent(jLabel2)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtidrenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(box1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(box2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(box4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(box3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7)
+                    .addComponent(fprestamo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(txttotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -273,14 +274,14 @@ public class RENTA extends javax.swing.JFrame {
             
             String id_cliente = box2.getSelectedItem().toString().split(" | ")[0];
             
-            String id_tipo_vehiculo = box5.getSelectedItem().toString().split(" | ")[0];
+           
             
             double TOTAL = Double.parseDouble(txttotal.getText());    
             
-            double PRECIO_ALQUILER = Double.parseDouble(txtprecioalquiler.getText());
+         
             
             Connection con = Conexion.getthatConexion();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO RENTA (ID_RENTA, SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL, PRECIO_ALQUILER, ID_TIPO_VEHICULO ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO RENTA (ID_RENTA, SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL ) VALUES(?, ?, ?, ?, ?, ?, ?)");
              
             ps.setInt(1, Integer.parseInt(txtidrenta.getText()));
             ps.setInt(2, Integer.parseInt(serie)); 
@@ -289,8 +290,8 @@ public class RENTA extends javax.swing.JFrame {
             ps.setInt(5, Integer.parseInt(id_tipo_pago)); 
             ps.setDate(6, FECHA_PRESTAMO);
             ps.setDouble(7, TOTAL);
-             ps.setDouble(8, PRECIO_ALQUILER);
-             ps.setInt(9, Integer.parseInt(id_tipo_vehiculo)); 
+          
+             
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Registro Guardado");
             cargarSerie();
@@ -298,7 +299,9 @@ public class RENTA extends javax.swing.JFrame {
             cargartipopago();
             cargarSerie();
             cargarusuario();
-              
+            LimpiarVariables();
+            cargartabla();
+            cargaridvehiculo();
         } catch(SQLException e){
             // JOptionPane.showMessageDialog(null, box3.getSelectedItem().toString().split(" | ")[0] );
             JOptionPane.showMessageDialog(null, e.toString());
@@ -307,6 +310,58 @@ public class RENTA extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.toString());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+         int id = Integer.parseInt(txtidrenta.getText());
+          String serie = box1.getSelectedItem().toString().split(" | ")[0];
+           try{
+            
+            Connection con = Conexion.getthatConexion();
+            PreparedStatement ps = con.prepareStatement("DELETE FROM RENTA WHERE ID_RENTA=?");
+            
+            // ps.setInt(1, ID_Usuario);
+           
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro eliminado");
+            LimpiarVariables();
+            cargartabla();
+                
+        } catch(SQLException e){
+        JOptionPane.showMessageDialog(null, e.toString());
+        }   
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void tblrentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblrentaMouseClicked
+         try{
+        
+            int fila = tblrenta.getSelectedRow();
+            int id = Integer.parseInt(tblrenta.getValueAt(fila, 0) .toString());
+            
+             PreparedStatement ps;
+             ResultSet rs;
+            
+             Connection con = Conexion.getthatConexion();
+   ps = con.prepareStatement("SELECT SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL FROM RENTA WHERE ID_RENTA=?");
+   
+   ps.setInt(1, id);
+   rs = ps.executeQuery();
+   
+   while(rs.next()){
+   txtidrenta.setText(String.valueOf(id));
+    txttotal.setText(rs.getString("TOTAL"));
+     
+     
+      
+   }
+        } catch(SQLException e){
+          JOptionPane.showMessageDialog(null, e.toString());
+        }
+    }//GEN-LAST:event_tblrentaMouseClicked
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+       LimpiarVariables();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     
  private void cargarSerie(){
@@ -430,9 +485,11 @@ private void cargarusuario(){
  }
 
 
-private void cargarvehiculo(){
+
+
+private void cargaridvehiculo(){
  
- DefaultComboBoxModel modelocaja = (DefaultComboBoxModel) box5.getModel();
+ DefaultComboBoxModel modelocaja = (DefaultComboBoxModel) box6.getModel();
     // modelocaja.setSelectedItem(0);
 
     PreparedStatement ps;
@@ -444,8 +501,8 @@ private void cargarvehiculo(){
 
     try{
      Connection con = Conexion.getthatConexion();
-      ps = con.prepareStatement("SELECT ID_TIPO_VEHICULO, DESCRIPCION\n" +
-   "  FROM [dbo].[TIPO_VEHICULO]");
+      ps = con.prepareStatement("SELECT ID_VEHICULO,  MODELO, PRECIO_ALQUILER" +
+   "  FROM [dbo].[VEHICULO]");
       rs = ps.executeQuery();
       rsmd = rs.getMetaData();
       columnas = rsmd.getColumnCount();
@@ -459,6 +516,41 @@ private void cargarvehiculo(){
     }
  }
 
+private void cargartabla(){
+ 
+ DefaultTableModel modelotabla = (DefaultTableModel) tblrenta.getModel();
+ modelotabla.setRowCount(0);
+ 
+ PreparedStatement ps;
+ ResultSet rs;
+ ResultSetMetaData rsmd = null;
+ int columnas;
+ 
+ 
+ try{
+  Connection con = Conexion.getthatConexion();
+   ps = con.prepareStatement("SELECT ID_RENTA, SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL  FROM RENTA ");
+   rs = ps.executeQuery();
+   rsmd = rs.getMetaData();
+   columnas = rsmd.getColumnCount();
+   
+   while(rs.next()){
+      Object[] fila = new Object[columnas];
+      for(int indice=0; indice<columnas; indice++){
+      fila[indice] = rs.getObject(indice + 1);
+      }
+      modelotabla.addRow(fila);
+   }
+ } catch(SQLException e){
+ JOptionPane.showMessageDialog(null, e.toString());
+ }
+ }
+  
+  private void LimpiarVariables(){
+        txtidrenta.setText("");
+        txttotal.setText("");
+        btngr.clearSelection(); 
+    }
 
 
     
@@ -499,26 +591,24 @@ private void cargarvehiculo(){
     private javax.swing.JComboBox<String> box2;
     private javax.swing.JComboBox<String> box3;
     private javax.swing.JComboBox<String> box4;
-    private javax.swing.JComboBox<String> box5;
+    private javax.swing.JComboBox<String> box6;
     private com.toedter.calendar.JDateChooser fprestamo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblrenta;
     private javax.swing.JTextField txtidrenta;
-    private javax.swing.JTextField txtprecioalquiler;
     private javax.swing.JTextField txttotal;
     // End of variables declaration//GEN-END:variables
 }

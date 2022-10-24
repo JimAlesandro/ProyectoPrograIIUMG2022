@@ -9,10 +9,10 @@ public class Conexion {
 
    public static Connection getthatConexion(){
     
-    String url = "jdbc:sqlserver://localhost:1433;"
+    String url = "jdbc:sqlserver://rentadevehiculos.cgblpzajkteo.us-east-2.rds.amazonaws.com:1433;"
             +"database=proyecto;"
-            +"user=sa;"
-            +"password=123456";
+            +"user=admin;"
+            +"password=V3h1cu705!";
     
     try{
     Connection con = DriverManager.getConnection(url);
