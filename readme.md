@@ -2,6 +2,15 @@
 ## Facultad de Ingenieria en Sistemas
 ## Proyecto Final Programacion II
 
+## Integrantes:
+
+| Nombre                              | Carnet       |
+|-------------------------------------|--------------|
+| Jim Alessandro Galvez Carpio        | 5090-21-8939 |
+| Christian Alejandro Martinez Flores | 5090-21-9741 |
+| Fredy Alejandro Tejeda Recinos      | 5090-21-     |
+| Fer Gonzales                        | 5090-21-     |
+
 ### Descripcion breve del proyecto
 
 Sistema de gestion de renta de vehiculos, en el codigo fuente, se encuentran
