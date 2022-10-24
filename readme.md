@@ -9,7 +9,7 @@
 | Jim Alessandro Galvez Carpio        | 5090-21-8939 |
 | Christian Alejandro Martinez Flores | 5090-21-9741 |
 | Fredy Alejandro Tejeda Recinos      | 5090-21-     |
-| Fer Gonzales                        | 5090-21-     |
+| Fernando Javier Gonzales Ovando     | 5090-21-4854 |
 
 ### Descripcion breve del proyecto
 
