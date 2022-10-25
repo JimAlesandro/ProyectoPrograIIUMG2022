@@ -273,6 +273,13 @@ public class RENTA extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
+        if(validarcorrelativo()==false ){
+            return;
+        }
+        
+        if(validar_fecha_prestamo()==false){
+        return;
+        }
         
         try{
             java.util.Date d = fprestamo.getDate();
@@ -305,8 +312,8 @@ public class RENTA extends javax.swing.JFrame {
             ps.setInt(5, Integer.parseInt(id_tipo_pago)); 
             ps.setDate(6, FECHA_PRESTAMO);
             ps.setDouble(7, TOTAL);
-          
-             
+            validar_fecha_prestamo();
+            validarcorrelativo();
             ps.executeUpdate();
             
             con.commit();
@@ -623,6 +630,35 @@ private void cargartabla(){
         txttotal.setText("");
         btngr.clearSelection(); 
     }
+  
+  private boolean validarcorrelativo(){
+  try{
+      int res = Integer.parseInt(txtidrenta.getText());
+      
+      return true;
+      
+  } catch(Exception e){
+   JOptionPane.showMessageDialog(null, "correlatico invalido");
+      return false;
+  }
+       
+  }
+  
+  private boolean validar_fecha_prestamo(){
+  try{
+      java.util.Date d = fprestamo.getDate();
+      
+      return true;
+      
+  } catch(Exception e){
+      
+      JOptionPane.showMessageDialog(null, "fecha invalida");
+      return false;
+  }
+      
+      
+  
+  }
 
 
     
