@@ -33,7 +33,7 @@ public class RENTA extends javax.swing.JFrame {
         cargartipopago();
         cargarusuario();
         btngr = new ButtonGroup();
-        cargartabla();
+        // cargartabla();
         cargaridvehiculo();
     }
 
@@ -69,6 +69,7 @@ public class RENTA extends javax.swing.JFrame {
         tblrenta = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
         box6 = new javax.swing.JComboBox<>();
+        jbAgregar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +119,9 @@ public class RENTA extends javax.swing.JFrame {
             }
         });
 
+        txttotal.setText("0.00");
+        txttotal.setEnabled(false);
+
         fprestamo.setDateFormatString("dd/MM/yyyy");
 
         tblrenta.setModel(new javax.swing.table.DefaultTableModel(
@@ -144,6 +148,13 @@ public class RENTA extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tblrenta);
 
         jLabel11.setText("ID_VEHICULO");
+
+        jbAgregar.setText("Agregar a Renta");
+        jbAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbAgregarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -202,7 +213,9 @@ public class RENTA extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel11)
                         .addGap(18, 18, 18)
-                        .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jbAgregar)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -241,12 +254,13 @@ public class RENTA extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                    .addComponent(box6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbAgregar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(txttotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -276,11 +290,12 @@ public class RENTA extends javax.swing.JFrame {
             
            
             
-            double TOTAL = Double.parseDouble(txttotal.getText());    
+            double TOTAL = 0.00;//Double.parseDouble(txttotal.getText());    
             
          
             
             Connection con = Conexion.getthatConexion();
+            con.setAutoCommit(false);
             PreparedStatement ps = con.prepareStatement("INSERT INTO RENTA (ID_RENTA, SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL ) VALUES(?, ?, ?, ?, ?, ?, ?)");
              
             ps.setInt(1, Integer.parseInt(txtidrenta.getText()));
@@ -293,13 +308,11 @@ public class RENTA extends javax.swing.JFrame {
           
              
             ps.executeUpdate();
+            
+            con.commit();
+            
             JOptionPane.showMessageDialog(null, "Registro Guardado");
-            cargarSerie();
-            cargarcliente();
-            cargartipopago();
-            cargarSerie();
-            cargarusuario();
-            LimpiarVariables();
+
             cargartabla();
             cargaridvehiculo();
         } catch(SQLException e){
@@ -360,8 +373,72 @@ public class RENTA extends javax.swing.JFrame {
     }//GEN-LAST:event_tblrentaMouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+       cargarSerie();
+       cargarcliente();
+       cargartipopago();
+       cargarSerie();
+       cargarusuario();
        LimpiarVariables();
+       cargaridvehiculo();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jbAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbAgregarActionPerformed
+        ResultSet rs;
+        ResultSetMetaData rsmd = null;
+        try{
+            String id_vehiculo = box6.getSelectedItem().toString().split(" | ")[0];
+            
+            String serie = box1.getSelectedItem().toString().split(" | ")[0];
+            
+            Connection con = Conexion.getthatConexion();
+            
+            PreparedStatement psPrecio = con.prepareStatement("SELECT PRECIO_ALQUILER FROM VEHICULO WHERE ID_VEHICULO = ? ");
+            psPrecio.setInt(1, Integer.parseInt(id_vehiculo));
+            
+            rs = psPrecio.executeQuery();
+            rsmd = rs.getMetaData();
+            int columnas = rsmd.getColumnCount();
+            String precio_renta = "";
+            while(rs.next()){
+                    precio_renta = rs.getString(1);
+                }
+            
+            con.setAutoCommit(false);
+            PreparedStatement ps = con.prepareStatement("INSERT INTO DETALLE_RENTA (ID_RENTA, SERIE, ID_VEHICULO, PRECIO_ALQUILER) VALUES(?, ?, ?, ?)");
+             
+            ps.setInt(1, Integer.parseInt(txtidrenta.getText()));
+            ps.setInt(2, Integer.parseInt(serie)); 
+            ps.setInt(3, Integer.parseInt(id_vehiculo));
+            ps.setDouble(4, Double.parseDouble(precio_renta));
+            
+            double total = Double.parseDouble(txttotal.getText()) + Double.parseDouble(precio_renta) ;
+            
+            txttotal.setText(String.valueOf(total));
+            
+            ps.execute();
+            
+            PreparedStatement ps2 = con.prepareStatement("UPDATE RENTA SET TOTAL = ? WHERE ID_RENTA = ? AND SERIE = ?");
+            
+            ps2.setDouble(1, total);
+            ps2.setInt(2, Integer.parseInt(txtidrenta.getText()));
+            ps2.setInt(3, Integer.parseInt(serie)); 
+            
+            ps2.execute();
+            
+            PreparedStatement ps3 = con.prepareStatement("UPDATE VEHICULO SET ID_VEHICULO_ESTADO = 2 WHERE ID_VEHICULO = ? ");
+            
+            ps3.setInt(1, Integer.parseInt(id_vehiculo));
+            
+            ps3.execute();
+            
+            con.commit();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.toString());
+        }
+         
+        cargaridvehiculo();
+        cargartabla();
+    }//GEN-LAST:event_jbAgregarActionPerformed
 
     
  private void cargarSerie(){
@@ -454,8 +531,6 @@ private void cargartipopago(){
 private void cargarusuario(){
 
     DefaultComboBoxModel modelocaja = (DefaultComboBoxModel) box4.getModel();
-    // modelocaja.setSelectedItem(0);
-
     PreparedStatement ps;
     ResultSet rs;
     ResultSetMetaData rsmd = null;
@@ -467,17 +542,10 @@ private void cargarusuario(){
       ps = con.prepareStatement("SELECT ID_USUARIO, CONCAT( [USUARIO], ' - ', [NOMBRE]) as DESCRIPCION\n" +
    "  FROM [dbo].[USUARIO] where [ESTADO] = 1");
       rs = ps.executeQuery();
-      // rsmd = rs.getMetaData();
-      // columnas = rsmd.getColumnCount();
 
       while(rs.next()){
           String element = rs.getString(1) + " | " + rs.getString(2) ;
           modelocaja.addElement(element);
-         //Object[] fila = new Object[columnas];
-         //for(int indice=0; indice<columnas; indice++){
-         //fila[indice] = rs.getObject(indice + 1);
-         //}
-         //modelocaja.addElement(fila);
       }
     } catch(SQLException e){
     JOptionPane.showMessageDialog(null, e.toString());
@@ -502,13 +570,13 @@ private void cargaridvehiculo(){
     try{
      Connection con = Conexion.getthatConexion();
       ps = con.prepareStatement("SELECT ID_VEHICULO,  MODELO, PRECIO_ALQUILER" +
-   "  FROM [dbo].[VEHICULO]");
+   "  FROM [dbo].[VEHICULO] where ID_VEHICULO_ESTADO = 1");
       rs = ps.executeQuery();
       rsmd = rs.getMetaData();
       columnas = rsmd.getColumnCount();
 
       while(rs.next()){
-          String element = rs.getString(1) + " | " + rs.getString(2) ;
+          String element = rs.getString(1) + " | " + rs.getString(2) + " | "  + rs.getString(3);
           modelocaja.addElement(element);
       }
     } catch(SQLException e){
@@ -529,7 +597,11 @@ private void cargartabla(){
  
  try{
   Connection con = Conexion.getthatConexion();
-   ps = con.prepareStatement("SELECT ID_RENTA, SERIE, ID_CLIENTE, ID_USUARIO, ID_TIPO_PAGO, FECHA_PRESTAMO, TOTAL  FROM RENTA ");
+   ps = con.prepareStatement("SELECT DR.ID_VEHICULO, VE.MODELO, DR.PRECIO_ALQUILER FROM DETALLE_RENTA DR, VEHICULO VE WHERE VE.ID_VEHICULO = DR.ID_VEHICULO  AND ID_RENTA = ? AND SERIE = ?");
+   int id_renta = Integer.parseInt(txtidrenta.getText());
+   int serie = Integer.parseInt(box1.getSelectedItem().toString().split(" | ")[0]);
+   ps.setInt(1, id_renta);
+   ps.setInt(2, serie);
    rs = ps.executeQuery();
    rsmd = rs.getMetaData();
    columnas = rsmd.getColumnCount();
@@ -607,6 +679,7 @@ private void cargartabla(){
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton jbAgregar;
     private javax.swing.JTable tblrenta;
     private javax.swing.JTextField txtidrenta;
     private javax.swing.JTextField txttotal;

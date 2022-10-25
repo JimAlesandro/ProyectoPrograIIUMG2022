@@ -11,8 +11,8 @@ public class Conexion {
     
     String url = "jdbc:sqlserver://rentadevehiculos.cgblpzajkteo.us-east-2.rds.amazonaws.com:1433;"
             +"database=proyecto;"
-            +"user=admin;"
-            +"password=V3h1cu705!";
+            +"user=JimGalvez;"
+            +"password=J1m947v3z!";
     
     try{
     Connection con = DriverManager.getConnection(url);
